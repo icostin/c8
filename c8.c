@@ -16,7 +16,7 @@ struct ctx_s
     c42_io8_t * out;
     c42_io8_t * err;
     c42_ma_t * ma;
-    c42_fsi_t * fsi;
+    c42_fsa_t * fsa;
     uint8_t const * svc_provider;
     uint8_t const * cmd_str;
     uint8_t const * const * args;
@@ -144,8 +144,8 @@ static void cmd_hex (ctx_t * ctx)
                 ERRLIT(ctx, "c8: multiple 'if=' not allowed!\n");
                 return;
             }
-            fsie = c42_file_open(ctx->fsi, &in, ctx->args[i] + 3, 
-                                 C42_FSI_OPEN_EXISTING);
+            fsie = c42_file_open(ctx->fsa, in, ctx->args[i] + 3, 
+                                 C42_FSA_OPEN_EXISTING);
             if (fsie)
             {
                 ctx->rc |= RC_INVOKE;
@@ -619,11 +619,11 @@ uint_fast8_t C42_CALL c42_main
     }
 
     /* prepare context */
-    ctx.in = clia->in;
-    ctx.out = clia->out;
-    ctx.err = clia->err;
-    ctx.ma = svc->ma;
-    ctx.fsi = svc->fsi;
+    ctx.in = &clia->stdio.in;
+    ctx.out = &clia->stdio.out;
+    ctx.err = &clia->stdio.err;
+    ctx.ma = &svc->ma;
+    ctx.fsa = &svc->fsa;
     ctx.rc = 0;
 
     cmd_func_table[cmd](&ctx);
