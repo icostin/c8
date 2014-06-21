@@ -13,9 +13,9 @@ AR:=$(TCPFX)ar
 STRIP:=$(TCPFX)strip
 CFG:=$(or $(CFG),release)
 O:=$(DEVDIR)/$(TARGET)-$(CFG)
-B:=/tmp/$(shell whoami)-$(TARGET)-$(CFG)-$N
-LIBPFX:=$(if $(findstring mingw,$(CC)),,lib)
-LIBEXT:=$(if $(findstring mingw,$(CC)),.dll,.so)
+B:=/tmp/$(shell whoami)-build/$(TARGET)-$(CFG)-$N
+DLIBPFX:=$(if $(findstring mingw,$(CC)),,lib)
+DLIBEXT:=$(if $(findstring mingw,$(CC)),.dll,.so)
 EXEEXT:=$(if $(findstring mingw,$(CC)),.exe,)
 
 EXEDYN:=$B/$N$(EXEEXT)
@@ -60,8 +60,7 @@ $(patsubst %.c,$B/%-sta.o,$(SRC)): $B/%-sta.o: %.c | $B
 	$(CC) -c -o $@ $< $(STACF) $(CF_$(CFG))
 
 $(EXEDYN): $(SRC) | $B
-	$(CC) -o $@ $< -I. $(DYNCF) $(CF_$(CFG)) -L$O/lib -lc42 -lc42svc -lc42clia
+	$(CC) -o $@ $< -I. $(DYNCF) $(CF_$(CFG)) -L$O/lib -lc42clia -l:$(DLIBPFX)c42svc$(DLIBEXT) -l:$(DLIBPFX)c42$(DLIBEXT)
 
 $(EXESTA): $(SRC) | $B
-	$(CC) -static -o $@ $< -D$D_STATIC -DC42_STATIC -DC42SVC_STATIC -I. $(STACF) $(CF_$(CFG)) -L$O/lib -lc42 -lc42svc -lc42clia
-
+	$(CC) -static -o $@ $< -D$D_STATIC -DC42_STATIC -DC42SVC_STATIC -I. $(STACF) $(CF_$(CFG)) -L$O/lib -lc42clia -lc42svc -lc42
