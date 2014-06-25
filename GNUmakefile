@@ -21,6 +21,7 @@ EXEEXT:=$(if $(findstring mingw,$(CC)),.exe,)
 EXEDYN:=$B/$N$(EXEEXT)
 EXESTA:=$B/$Ns$(EXEEXT)
 CF:=-std=c99 -Wall -Werror -Wextra -fvisibility=hidden -I$O/include
+LF:=$(and $(findstring mingw,$(TARGET)),-mconsole -municode)
 
 DYNCF:=$(CF)
 STACF:=$(CF)
@@ -60,7 +61,7 @@ $(patsubst %.c,$B/%-sta.o,$(SRC)): $B/%-sta.o: %.c | $B
 	$(CC) -c -o $@ $< $(STACF) $(CF_$(CFG))
 
 $(EXEDYN): $(SRC) | $B
-	$(CC) -o $@ $< -I. $(DYNCF) $(CF_$(CFG)) -L$O/lib -lc42clia -l:$(DLIBPFX)c42svc$(DLIBEXT) -l:$(DLIBPFX)c42$(DLIBEXT)
+	$(CC) $(LF) -o $@ $< -I. $(DYNCF) $(CF_$(CFG)) -L$O/lib -lc42clia -l:$(DLIBPFX)c42svc$(DLIBEXT) -l:$(DLIBPFX)c42$(DLIBEXT)
 
 $(EXESTA): $(SRC) | $B
-	$(CC) -static -o $@ $< -D$D_STATIC -DC42_STATIC -DC42SVC_STATIC -I. $(STACF) $(CF_$(CFG)) -L$O/lib -lc42clia -lc42svc -lc42
+	$(CC) $(LF) -static -o $@ $< -D$D_STATIC -DC42_STATIC -DC42SVC_STATIC -I. $(STACF) $(CF_$(CFG)) -L$O/lib -lc42clia -lc42svc -lc42
